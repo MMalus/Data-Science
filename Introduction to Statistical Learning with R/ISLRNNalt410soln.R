@@ -68,4 +68,7 @@ predicted.nn.values$net.result <- sapply(predicted.nn.values$net.result, round, 
 table(test$Direction, predicted.nn.values$net.result)
 
 #So as you can see, even with this incredibly simplistic NN, we have achieved a
-#significant improvement in our predictions.
+#significant improvement in our predictions.  Let's see the architecture of the
+#network, just for illustration of complexity.
+
+plot(nn)
