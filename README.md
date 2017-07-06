@@ -17,7 +17,7 @@ SQL and is almost done.
 
 Here's a brief list of what I still have to clean up/sort through and upload:
 
--Chapter solutions from ISLR Chapters 5, 6, 7, 8, 9, 10
+-Chapter solutions from ISLR Chapters 5, 7, 8, 9, 10
 
 -SQL helpful guide and tricks
 
