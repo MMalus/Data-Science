@@ -128,3 +128,87 @@ lasso.best = glmnet(xmat, Y, alpha=1)
 predict(lasso.best, s = best.lambda, type = "coefficients")
 
 #Examining these results, we see that Lasso adds a (very) small X^9 parameter, but that it's beta0 and beta7 are relatively good
+
+#Problem 9
+
+attach(College)
+
+#Problem 9(a)
+#We'll use caTools' here with a training size of 70%
+split = sample.split(College, SplitRatio = 0.70)
+
+#Split based off of split Boolean Vector
+train = subset(College, split == TRUE)
+test = subset(College, split == FALSE)
+
+#Problem 9(b)
+#We are interested in predicting the number of applications received
+lm.fit = lm(Apps~., data=train)
+lm.pred = predict(lm.fit, test)
+
+#Recall the test error for least squares is mean((y-pred)^2)
+mean((test[,"Apps"]-lm.pred)^2)
+#We find a test error of 1246994
+
+#Problem 9(c)
+xmattrain = model.matrix(Apps~., data=train)
+xmattest = model.matrix(Apps~., data=test)
+grid = 10^seq(10, -2, length=100)
+ridge.fit = cv.glmnet(xmattrain, train[,"Apps"], alpha = 0, lambda = grid)
+#We see we have a best fit lambda of 32.74549
+lambda.best = ridge.fit$lambda.min
+ridge.pred = predict(ridge.fit, newx = xmattest, s=lambda.best)
+mean((test[, "Apps"]-ridge.pred)^2)
+#The new error is slightly higher now at 1427451
+
+#Problem 9(d)
+lasso.mod = cv.glmnet(xmattrain, train[, "Apps"], alpha = 1)
+#We see the best lambda as 3.912414
+best.lambda = min(lasso.mod$lambda)
+#Now we redo this, using the best lambda we found above:
+lasso.pred = predict(lasso.mod, newx = xmattest, s = best.lambda)
+mean((test[, "Apps"]-lasso.pred)^2)
+#We see a closer error (but still higher) at 1267010
+
+#Now we examine the coefficients as follows, it looks like nothing was zeroed out
+lasso.mod = glmnet(model.matrix(Apps~., data=College), College[, "Apps"], alpha=1)
+lasso.pred = predict(lasso.mod, s = best.lambda, type="coefficients")
+
+#Problem 9(e)
+#Remember to remove missing values before attempting this part of the exercise
+pcr.fit = pcr(Apps~., data=train, scale = TRUE, validation="CV")
+#Use validationplot() to find M (looks like 10 on my plot)
+validationplot(pcr.fit, val.type="MSEP")
+pcr.pred = predict(pcr.fit, test, ncomp=10)
+mean((test[, "Apps"]-pcr.pred)^2)
+#We see an error of 3288706
+
+#Problem 9(f)
+pls.fit = plsr(Apps~., data = train, scale = TRUE,validation="CV")
+validationplot(pls.fit, val.type="MSEP")
+#Again, looks like it bottoms out around 10 or so
+pls.pred = predict(pls.fit, test, ncomp=10)
+mean((test[, "Apps"]-pls.pred)^2)
+#We see an error of 1236705, best so far!
+
+#Problem 9(g)
+#It looks like, on the face of it, PLS is the strongest result.  It seems like, in general,
+# we are able to predict applications fairly well.  Lasso shrunk the importance
+#of many variables, but did not outright delete any of them.  The test error for
+#pcr was massive however, and we should probably avoid using it here.
+
+#Probem 10
+
+#Problem 10(a)
+p = 20
+n = 1000
+beta = rnorm(p)
+epsilon = rnorm(p)
+X = matrix(rnorm(n * p), n, p)
+#Let's pick five elements to set to zero: 16, 12, 1, 2, 3 (done by drawing random numbers from 1 to 20)
+beta[16] = 0
+beta[12] = 0
+beta[1] = 0
+beta[2] = 0
+beta[3] = 0
+y = X %*% beta + epsilon
