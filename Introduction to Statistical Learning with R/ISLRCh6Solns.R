@@ -1,6 +1,8 @@
 library(ISLR)
 library(leaps)
 library(glmnet)
+library(caTools)
+library(pls)
 set.seed(1)
 
 #Problem 8
