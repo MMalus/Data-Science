@@ -211,4 +211,70 @@ beta[12] = 0
 beta[1] = 0
 beta[2] = 0
 beta[3] = 0
+#Matrix multiplication for R is %*% 
 y = X %*% beta + epsilon
+
+#Problem 10(b)
+#caTools (to my knowledge) won't work well on matrices, so we do this the old fashioned way
+train = sample(seq(1000), 100, replace = FALSE)
+X.train = X[train, ]
+X.test = X[-train, ]
+y.train = y[train,]
+y.test = y[-train,]
+
+#Problem 10(c)
+regfit.full = regsubsets(y~., data = data.frame(x= X.train, y=y.train), nvmax=p)
+summary(regfit.full)
+#we create essentially an empty vector p units long. We'll fill this with a for loop
+val.errors = rep(NA, p)
+#generate same fake "names" for our columns
+x_cols = colnames(X, do.NULL = FALSE, prefix = "x.")
+for (i in 1:p) {
+  coefficients = coef(regfit.full, id = i)
+  pred = as.matrix(X.train[, x_cols %in% names(coefficients)]) %*% coefficients[names(coefficients) %in% x_cols]
+  val.errors[i] = mean((y.train - pred)^2)
+}
+#Finally, plot the errors
+plot(val.errors, ylab = "Training MSE", pch = 19, type = "b")
+
+#Problem 10(d)
+#Copy pasted from 10(c) essentially
+#we create essentially an empty vector p units long. We'll fill this with a for loop
+val.errors = rep(NA, p)
+#generate same fake "names" for our columns
+x_cols = colnames(X, do.NULL = FALSE, prefix = "x.")
+for (i in 1:p) {
+  coefficients = coef(regfit.full, id = i)
+  pred = as.matrix(X.test[, x_cols %in% names(coefficients)]) %*% coefficients[names(coefficients) %in% x_cols]
+  val.errors[i] = mean((y.test - pred)^2)
+}
+#Finally, plot the errors
+plot(val.errors, ylab = "Test MSE", pch = 19, type = "b")
+
+#Problem 10(e)
+#It looks like we want 12 parameter from the graph, but just to check:
+which.min(val.errors)
+#So 12 parameter is correct!  Since five of the parameters were zero, it makes
+#some sense that the number of parameters we want is less than 20.
+
+#Problem 10(f)
+#We'd like to see how many of the actually zero coefficients the model caught
+#Recall that we zeroed out 1, 2, 3, 12, and 16 by force at the start.
+coef(regfit.full, id = 12)
+#We actually caught all the forcefully zeroed out coefficients, but it seems
+#that we picked up another one at 7.  Can't win them all it seems!
+
+#Problem 10(g)
+#again, we mostly copy and paste the code from  part 10(c)
+val.errors = rep(NA, p)
+a = rep(NA, p)
+b = rep(NA, p)
+for (i in 1:p) {
+  coefficients = coef(regfit.full, id = i)
+  a[i] = length(coefficients) - 1
+  b[i] = sqrt(sum((beta[x_cols %in% names(coefficients)] - coefficients[names(coefficients) %in% x_cols])^2) + sum(beta[!(x_cols %in% names(coefficients))])^2)
+}
+#Finally, plot the errors
+plot(x = a, y = b, xlab = "number of coefficients", ylab = "error between estimated and true coefficients")
+#We find a discrepancy of 1 between our result here and our result in 10(d)
+which.min(b)
