@@ -21,6 +21,8 @@ Here's a brief list of what I still have to clean up/sort through and upload:
 
 -SQL helpful guide and tricks
 
+-Code for Andrew Ng's ML Coursera Course and code for Hinton's Neural Networks Coursera Course
+
 -Two python done Kaggle competitions
 
 -Some random scripts from CRF stuff
