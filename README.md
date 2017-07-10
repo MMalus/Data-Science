@@ -2,6 +2,8 @@
 
 Storage for simple data science tips and tricks, or full projects, that I've dealt with before.  Updated as I sort through the large backlog of stuff I just have sitting on my harddrive.
 
+EDIT: As of 7/9/2017, I've noticed the French election data is rehosted on Kaggle.  I'll be switching my focus for the next few days to taking another crack at it.
+
 As of right now (7/3/17) here is the general organizational plan:
 
 -The folder "Introduction to Statistical Learning with R" contains R programming exercise solutions to the textbook of the same name.  It also
